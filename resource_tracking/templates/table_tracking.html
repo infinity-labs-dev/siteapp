@@ -1,0 +1,42 @@
+{% extends 'admin/base.html' %} {% block branding %}
+<h1 id="site-name">Infi Tracking</h1>
+{% endblock %} {% block title %}Tracking Summary{% endblock %} 
+{% block content %}
+
+    <h1 style="text-align: center">TOTAL DISTANCE TRAVELED - {{total_distance_traveled}} KM</h1>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6" style="width: 50%;margin: 0 auto;">
+                <table id="result_list" class="table table-striped table-bordered table-sm">
+                    <thead>
+                        <tr>
+                            {% comment %} <th scope="col" class="sortable" style="text-align:center">Sr. No</th> {% endcomment %}
+                            <th scope="col" class="sortable" style="text-align:center">Mode</th>
+                            <th scope="col" class="sortable" style="text-align:center">Latitude</th>
+                            <th scope="col" class="sortable" style="text-align:center">Longitude</th>
+                            <th scope="col" class="sortable" style="text-align:center">Timestamp</th>
+                            <th scope="col" class="sortable" style="text-align:center">Point Distance</th>
+                            <th scope="col" class="sortable" style="text-align:center">Summation Distance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for mode,lat,long,time,pointd,sumd in final_result_list%}
+                        <tr>
+                            {% comment %} <td style="text-align:center">{{i}}</td> {% endcomment %}
+                            <td style="text-align:center">{{mode}}</td>
+                            <td style="text-align:center">{{lat}}</td>
+                            <td style="text-align:center">{{long}}</td>
+                            <td style="text-align:center">{{time}}</td>
+                            <td style="text-align:center">{{pointd}}</td>
+                            <td style="text-align:center">{{sumd}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        
+        </div>   
+    </div>        
+
+{% endblock %}

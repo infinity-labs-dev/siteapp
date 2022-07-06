@@ -1,0 +1,61 @@
+{% extends 'admin/change_list.html' %}
+
+{% block content_title %}
+    <h1> Tracking Summary </h1>
+{% endblock %}
+{% block result_list %}
+<div id="changelist" class="module">
+<div class="changelist-form-container">
+  <form id="changelist-form" method="post" novalidate="">
+<div class=”results”>
+    <table class="result_list table table-sm">
+    <thead class="table-primary" style="color: #666; padding: 8px;">
+      <tr style="padding: 8px; height: 28px; line-height: 16px;">
+        <th>
+          <div class=”text”>
+            <a href=”#”>Ticket No</a>
+          </div>
+        </th>
+        <th>
+          <div class=”text”>
+            <a href=”#”>Site Name</a>
+          </div>
+        </th>
+        <th>
+          <div class=”text”>
+            <a href=”#”>Total Time(Hour)</a>
+          </div>
+        </th>
+        <th>
+          <div class=”text”>
+            <a href=”#”>
+              <strong>Distance(KM)</strong>
+            </a>
+          </div>
+        </th>
+        <th>
+          <div class=”text”>
+            <a href=”#”>
+              <strong>Action</strong>
+            </a>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for row in data %}
+      <tr>
+        <td> {{ row.id }} </td>
+
+      </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
+</div>
+</form>
+</div>
+</div>
+{% endblock %}
+{% block pagination %}{% endblock %}
