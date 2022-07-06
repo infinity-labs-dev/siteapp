@@ -1,0 +1,17 @@
+/static
+/siteapp/.env
+resource_tracking/__pycache__/admin.cpython-36.pyc
+resource_tracking/models/__pycache__/fault_management.cpython-36.pyc
+resource_tracking/view/__pycache__/my_fault.cpython-36.pyc
+resource_tracking/view/__pycache__/userTracking.cpython-36.pyc
+resource_tracking/__pycache__/
+resource_tracking/migrations/
+resource_tracking/view/__pycache__/
+resource_tracking/models/__pycache__/
+resource_tracking/migrations/
+sites/migrations/
+siteapp/__pycache__/
+media/fault_images/
+sites/models/__pycache__/sites.cpython-36.pyc
+sites/__pycache__/admin.cpython-36.pyc
+media/None/
