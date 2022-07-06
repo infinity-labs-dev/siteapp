@@ -575,22 +575,21 @@ class UpdateTaskDetails(APIView):
             faultArray=[]
                 
             data=request.data
-            row_id = data['row_id']
+            task_mapper_id = data['task_mapper_id']
             user_id = data['user_id']
             status = data['status']
             file = request.data['file']
-            # print("file", file)
 
-            result = SiteTaskMapper.objects.get(id=row_id)
+            result = SiteTaskMapper.objects.get(id=task_mapper_id)
             result.status = status
             result.file=file
             result.save()
             
-            updatedResult = SiteTaskMapper.objects.filter(id=row_id)
+            updatedResult = SiteTaskMapper.objects.filter(id=task_mapper_id)
             if updatedResult:
                 for t in updatedResult:
                     innserarray={}
-                    innserarray.update({"row_id": t.id, "sites_id": t.sites_id, "site_name": t.sites.site_name, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "status": t.status, "file": str(t.file), "created_at": t.created_at})
+                    innserarray.update({"task_mapper_id": t.id, "sites_id": t.sites_id, "site_name": t.sites.site_name, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "status": t.status, "file": str(t.file), "created_at": t.created_at})
         
                     faultArray.append(innserarray)
             
@@ -598,11 +597,9 @@ class UpdateTaskDetails(APIView):
             return Response({"data":faultArray, "image_url":imageArray, "sucess":True, "message":message})
             
         except Exception as e:
-            print("error ***", e)
+            # print("error ***", e)
             faultArray = []            
-            # imageArray=[httpString+socket.gethostname()+"/media/"]
             imageArray=["https://siteappsoftware.pythonanywhere.com/media/"]
-            # message = "Something went wrong"
             message = str(e)
 
-            return Response({"data":faultArray, "images":imageArray, "sucess":False, "message":message})
+            return Response({"data":faultArray, "images":imageArray, "sucess":False, "message":message})    
