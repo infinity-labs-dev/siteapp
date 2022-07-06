@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from resource_tracking.models.fault_management import FaultManagement
 from sites.models.sites import Sites
 from resource_tracking.models.site_tracking import SiteTracking
+from sites.models.sitetaskmapper import SiteTaskMapper
 from resource_tracking.models import FaultImages
 from resource_tracking.models.faultsite_comments import FaultComments
 from resource_tracking.models.site_assignment import SiteAssignement
@@ -40,12 +41,9 @@ class MyFault(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
         # print("user =", request.user)
-        # for g in request.user.groups.all():
-        #     l.append(g.id)
 
-        faultLists=Sites.objects.filter(site_engineer=request.user)
-        print(faultLists.query)
-        faultArray=[]
+        faultLists=Sites.objects.filter(site_engineer=request.user)        
+        faultArray=[]        
         if faultLists:
             for faultList in faultLists:
                 assignedDate = str(datetime.datetime.strftime(faultList.created_at, "%d-%m-%Y %I:%M%p"))
@@ -54,6 +52,13 @@ class MyFault(APIView):
                     accpeted_by=faultList.accpeted_by_id
                 innserarray={}
                 innserarray.update({"site_id": faultList.id, "project_id": faultList.project_id_id, "site_name":faultList.site_name, 'site_details':faultList.site_details, "spoc_name": faultList.spoc_name, "spoc_contact": faultList.spoc_contact, "scheduled_date": faultList.scheduled_date, 'address': faultList.address, 'verification_status':faultList.verification_status, "latitude":faultList.latitude, "longitude":faultList.longitude, 'accpeted_by': accpeted_by, 'assigned_at': assignedDate})
+                tasks = SiteTaskMapper.objects.filter(sites=faultList.id)
+                tasksArray=[]
+                for mapper in tasks:
+                    insertTasks = {}
+                    insertTasks.update({"task_mapper_id": mapper.id, "site_id": mapper.sites.id, "project_id": mapper.projects.id, "project_name": mapper.projects.project_name, "task_id": mapper.tasks.id, "task_name": mapper.tasks.task_name, "status": mapper.status})
+                    tasksArray.append(insertTasks)
+                innserarray.update({"tasks": tasksArray})
                 faultArray.append(innserarray)
 
             message = ""
@@ -77,7 +82,7 @@ class MyFaultView(APIView):
                 httpString="https://"
             else:
                 httpString="http://"
-            fault_id = self.request.query_params.get('fault_id')
+            fault_id = self.request.query_params.get('site_id')
             if fault_id is not None and fault_id != '' :
 
                 faultLists=Sites.objects.filter(id=fault_id, site_engineer=request.user)
@@ -101,7 +106,7 @@ class MyFaultView(APIView):
                         # print(tasks)
                         for t in tasks:
                             tasksArray={}
-                            tasksArray.update({"row_id": t.id, "sites_id": t.sites_id, "site_name": t.sites.site_name, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "status": t.status, "file": str(t.file), "created_at": t.created_at})
+                            tasksArray.update({"task_mapper_id": t.id, "sites_id": t.sites_id, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "status": t.status, "file": str(t.file), "created_at": t.created_at})
                             # print("tasksArray", tasksArray)
                             tasksarray.append(tasksArray)
                         
