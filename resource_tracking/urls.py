@@ -20,5 +20,6 @@ urlpatterns = [
     path('track_user/', userTracking.UserTracking.as_view(),name='track_user'),
     path('track_summary/', userTracking.TrackSummary.as_view(),name='track_summary'),
     path('update_task_details/', my_fault.UpdateTaskDetails.as_view(),name='update_task_details'),
+    path('get_task_details/', my_fault.viewTaskDetails.as_view(),name='get_task_details'),
     
 ]

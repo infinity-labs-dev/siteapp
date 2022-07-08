@@ -118,26 +118,26 @@ class MyFaultView(APIView):
                         
                     faultImages = FaultImages.objects.filter(fault_id=fault_id)
                                         
-                    imageArray=["https://siteappsoftware.pythonanywhere.com/media/"]
+                    imageArray=["https://siteapp.pythonanywhere.com/media/"]
 
                     # import pdb;pdb.set_trace()
                     message = ""
                     return Response({"data":faultArray, "image_url":imageArray, "sucess":True, "message":message})
                 else:
                     faultArray = []                    
-                    imageArray=[httpString+request.META['SERVER_NAME']+"/media/"]
+                    imageArray=["https://siteapp.pythonanywhere.com/media/"]
                     message = "No Result Found."
                     return Response({"data":faultArray, "image_url":imageArray, "sucess":False, "message":message})
             else:
                 faultArray = []
-                imageArray=["https://siteappsoftware.pythonanywhere.com/media/"]
+                imageArray=["https://siteapp.pythonanywhere.com/media/"]
                 message = "fault_id missing"
                 return Response({"data":faultArray, "image_url":imageArray,"sucess":False, "message":message})
 
         except Exception as e:
             print("error ***", e)
             faultArray = []
-            imageArray=["https://siteappsoftware.pythonanywhere.com/media/"]
+            imageArray=["https://siteapp.pythonanywhere.com/media/"]
             # message = "Something went wrong"
             message = str(e)
 
@@ -570,7 +570,7 @@ class UpdateTaskDetails(APIView):
             else:
                 httpString="http://"
                 
-            imageArray=["https://siteappsoftware.pythonanywhere.com/media/"]          
+            imageArray=["https://siteapp.pythonanywhere.com/media/"]          
             
             faultArray=[]
                 
@@ -599,7 +599,55 @@ class UpdateTaskDetails(APIView):
         except Exception as e:
             # print("error ***", e)
             faultArray = []            
-            imageArray=["https://siteappsoftware.pythonanywhere.com/media/"]
+            imageArray=["https://siteapp.pythonanywhere.com/media/"]
             message = str(e)
 
-            return Response({"data":faultArray, "images":imageArray, "sucess":False, "message":message})    
+            return Response({"data":faultArray, "images":imageArray, "sucess":False, "message":message}) 
+        
+        
+class viewTaskDetails(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request):
+        try:
+            #  static vars
+            httpString=""
+            if request.is_secure():
+                httpString="https://"
+            else:
+                httpString="http://"
+            
+            task_mapper_id = self.request.query_params.get('task_mapper_id')
+            if task_mapper_id is not None and task_mapper_id != '' :
+                tasksArray=[]
+                tasks=SiteTaskMapper.objects.filter(id=task_mapper_id)
+                print(tasks)
+                if tasks:
+                    for t in tasks:
+                        insertArray={}
+                        insertArray.update({"task_mapper_id": t.id, "sites_id": t.sites_id, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "status": t.status, "file": str(t.file), "created_at": t.created_at})
+                        # print("tasksArray", tasksArray)
+                    tasksArray.append(insertArray)
+                    
+                    imageArray=["https://siteapp.pythonanywhere.com/media/"]
+
+                    # import pdb;pdb.set_trace()
+                    message = ""
+                    return Response({"data":tasksArray, "image_url":imageArray, "sucess":True, "message":message})   
+                else:
+                    tasksArray = []                    
+                    imageArray=["https://siteapp.pythonanywhere.com/media/"]
+                    message = "No Result Found."
+                    return Response({"data":tasksArray, "image_url":imageArray, "sucess":False, "message":message})    
+            else:
+                tasksArray = []
+                imageArray=["https://siteapp.pythonanywhere.com/media/"]
+                message = "fault_id missing"
+                return Response({"data":tasksArray, "image_url":imageArray,"sucess":False, "message":message})    
+                   
+        except Exception as e:
+            tasksArray = []
+            imageArray=["https://siteapp.pythonanywhere.com/media/"]
+            # message = "Something went wrong"
+            message = str(e)
+
+            return Response({"data":tasksArray, "images":imageArray, "sucess":False, "message":message})
