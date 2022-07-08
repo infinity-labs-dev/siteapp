@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-zatm5!axc@7&=6g=ls4em39rmk2__rfdp130o@ghi47qmt7lzb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.216', 'siteapp.pythonanywhere.com', ]
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.216', 'siteapp.pythonanywhere.com', '192.168.1.146', ]
 
 
 # Application definition
