@@ -35,6 +35,7 @@ from resource_tracking.models.push_notification_log import PushNotificationLog
 from resource_tracking.utils import saveSiteTracking
 from projects.models.projecttasks import ProjectTasks
 from sites.models.sitetaskmapper import SiteTaskMapper
+from tasks.models.tasks import Tasks
 
 # view fault site list
 class MyFault(APIView):
@@ -575,14 +576,21 @@ class UpdateTaskDetails(APIView):
             faultArray=[]
                 
             data=request.data
+            # print("data", data)            
             task_mapper_id = data['task_mapper_id']
             user_id = data['user_id']
             status = data['status']
-            file = request.data['file']
-
+            filedata = dict((request.FILES).lists()).get('file', None)
+            if filedata:                
+                file = request.data['file']
+            else:
+                file = ''
+            print("file ==", file)
+            
             result = SiteTaskMapper.objects.get(id=task_mapper_id)
             result.status = status
-            result.file=file
+            if filedata: 
+                result.file=file            
             result.save()
             
             updatedResult = SiteTaskMapper.objects.filter(id=task_mapper_id)
@@ -651,3 +659,28 @@ class viewTaskDetails(APIView):
             message = str(e)
 
             return Response({"data":tasksArray, "images":imageArray, "sucess":False, "message":message})
+        
+class GetAllTaskStatus(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request):
+        try:
+            # static variables
+            siteArray=[]
+            message = "Task Status List"
+            siteObject = Tasks.CURRENT_STATUS
+            if siteObject:
+                for site in siteObject:
+                    insertArray={}
+                    insertArray.update({"status": site[0]})
+                    siteArray.append(insertArray)
+                    
+                return Response({"data":siteArray,"sucess":True, "message":message})
+            else:
+                message="No Result Found."
+                permissions=[]
+                return Response({"data":siteArray,"sucess":False, "message":message})
+        except Exception as e:
+            siteArray = []
+            permissions = []
+            message = str(e)
+            return Response({"data":siteArray,"sucess":False, "message":message})       
