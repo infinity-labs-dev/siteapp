@@ -8,7 +8,7 @@ from projects.models.projecttasks import ProjectTasks
 class TaskInline(admin.TabularInline):
     model = SiteTaskMapper
     extra = 0
-    fields = ['tasks', 'status', 'file', 'created_at']
+    fields = ['tasks', 'status', 'site_engineer', 'sequence_no', 'resource_flag', 'file', 'created_at']
     
 class AdminSites(admin.ModelAdmin):
     

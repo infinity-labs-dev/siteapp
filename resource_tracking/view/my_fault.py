@@ -53,11 +53,11 @@ class MyFault(APIView):
                     accpeted_by=faultList.accpeted_by_id
                 innserarray={}
                 innserarray.update({"site_id": faultList.id, "project_id": faultList.project_id_id, "site_name":faultList.site_name, 'site_details':faultList.site_details, "spoc_name": faultList.spoc_name, "spoc_contact": faultList.spoc_contact, "scheduled_date": faultList.scheduled_date, 'address': faultList.address, 'verification_status':faultList.verification_status, "latitude":faultList.latitude, "longitude":faultList.longitude, 'accpeted_by': accpeted_by, 'assigned_at': assignedDate})
-                tasks = SiteTaskMapper.objects.filter(sites=faultList.id)
+                tasks = SiteTaskMapper.objects.filter(sites=faultList.id, site_engineer=request.user)
                 tasksArray=[]
                 for mapper in tasks:
                     insertTasks = {}
-                    insertTasks.update({"task_mapper_id": mapper.id, "site_id": mapper.sites.id, "project_id": mapper.projects.id, "project_name": mapper.projects.project_name, "task_id": mapper.tasks.id, "task_name": mapper.tasks.task_name, "status": mapper.status})
+                    insertTasks.update({"task_mapper_id": mapper.id, "site_id": mapper.sites.id, "project_id": mapper.projects.id, "project_name": mapper.projects.project_name, "task_id": mapper.tasks.id, "task_name": mapper.tasks.task_name, "sequence_no": mapper.sequence_no, "resource_flag": mapper.resource_flag, "status": mapper.status})
                     tasksArray.append(insertTasks)
                 innserarray.update({"tasks": tasksArray})
                 faultArray.append(innserarray)
@@ -83,6 +83,9 @@ class MyFaultView(APIView):
                 httpString="https://"
             else:
                 httpString="http://"
+                
+            imageArray="https://siteapp.pythonanywhere.com/media/"
+                            
             fault_id = self.request.query_params.get('site_id')
             if fault_id is not None and fault_id != '' :
 
@@ -103,11 +106,12 @@ class MyFaultView(APIView):
                         comments=getFaultComments(fault_id)
                         
                         # tasks
-                        tasks = SiteTaskMapper.objects.raw('SELECT * FROM sites_sitetaskmapper WHERE sites_id ='+ str(faultList.id))
+                        # tasks = SiteTaskMapper.objects.raw('SELECT * FROM sites_sitetaskmapper WHERE sites_id ='+ str(faultList.id))
+                        tasks = SiteTaskMapper.objects.filter(site_engineer=request.user, sites_id=str(faultList.id))
                         # print(tasks)
                         for t in tasks:
                             tasksArray={}
-                            tasksArray.update({"task_mapper_id": t.id, "sites_id": t.sites_id, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "status": t.status, "file": str(t.file), "created_at": t.created_at})
+                            tasksArray.update({"task_mapper_id": t.id, "sites_id": t.sites_id, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "sequence_no": t.sequence_no, "resource_flag": t.resource_flag, "status": t.status, "file": str(t.file), "created_at": t.created_at})
                             # print("tasksArray", tasksArray)
                             tasksarray.append(tasksArray)
                         
@@ -117,28 +121,24 @@ class MyFaultView(APIView):
     
                         faultArray.append(innserarray)
                         
-                    faultImages = FaultImages.objects.filter(fault_id=fault_id)
-                                        
-                    imageArray=["https://siteapp.pythonanywhere.com/media/"]
+                    faultImages = FaultImages.objects.filter(fault_id=fault_id)                                        
 
                     # import pdb;pdb.set_trace()
                     message = ""
                     return Response({"data":faultArray, "image_url":imageArray, "sucess":True, "message":message})
                 else:
-                    faultArray = []                    
-                    imageArray=["https://siteapp.pythonanywhere.com/media/"]
+                    faultArray = []
                     message = "No Result Found."
                     return Response({"data":faultArray, "image_url":imageArray, "sucess":False, "message":message})
             else:
                 faultArray = []
-                imageArray=["https://siteapp.pythonanywhere.com/media/"]
                 message = "fault_id missing"
                 return Response({"data":faultArray, "image_url":imageArray,"sucess":False, "message":message})
 
         except Exception as e:
             print("error ***", e)
             faultArray = []
-            imageArray=["https://siteapp.pythonanywhere.com/media/"]
+            imageArray="https://siteapp.pythonanywhere.com/media/"
             # message = "Something went wrong"
             message = str(e)
 
@@ -571,7 +571,7 @@ class UpdateTaskDetails(APIView):
             else:
                 httpString="http://"
                 
-            imageArray=["https://siteapp.pythonanywhere.com/media/"]          
+            imageArray="https://siteapp.pythonanywhere.com/media/"         
             
             faultArray=[]
                 
@@ -597,7 +597,7 @@ class UpdateTaskDetails(APIView):
             if updatedResult:
                 for t in updatedResult:
                     innserarray={}
-                    innserarray.update({"task_mapper_id": t.id, "sites_id": t.sites_id, "site_name": t.sites.site_name, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "status": t.status, "file": str(t.file), "created_at": t.created_at})
+                    innserarray.update({"task_mapper_id": t.id, "sites_id": t.sites_id, "site_name": t.sites.site_name, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "sequence_no": t.sequence_no, "resource_flag": t.resource_flag, "status": t.status, "file": str(t.file), "created_at": t.created_at})
         
                     faultArray.append(innserarray)
             
@@ -607,7 +607,7 @@ class UpdateTaskDetails(APIView):
         except Exception as e:
             # print("error ***", e)
             faultArray = []            
-            imageArray=["https://siteapp.pythonanywhere.com/media/"]
+            imageArray="https://siteapp.pythonanywhere.com/media/"
             message = str(e)
 
             return Response({"data":faultArray, "images":imageArray, "sucess":False, "message":message}) 
@@ -623,6 +623,8 @@ class viewTaskDetails(APIView):
                 httpString="https://"
             else:
                 httpString="http://"
+                
+            imageArray="https://siteapp.pythonanywhere.com/media/"
             
             task_mapper_id = self.request.query_params.get('task_mapper_id')
             if task_mapper_id is not None and task_mapper_id != '' :
@@ -632,29 +634,25 @@ class viewTaskDetails(APIView):
                 if tasks:
                     for t in tasks:
                         insertArray={}
-                        insertArray.update({"task_mapper_id": t.id, "sites_id": t.sites_id, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "status": t.status, "file": str(t.file), "created_at": t.created_at})
+                        insertArray.update({"task_mapper_id": t.id, "sites_id": t.sites_id, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "sequence_no": t.sequence_no, "resource_flag": t.resource_flag, "status": t.status, "file": str(t.file), "created_at": t.created_at})
                         # print("tasksArray", tasksArray)
                     tasksArray.append(insertArray)
                     
-                    imageArray=["https://siteapp.pythonanywhere.com/media/"]
-
                     # import pdb;pdb.set_trace()
                     message = ""
                     return Response({"data":tasksArray, "image_url":imageArray, "sucess":True, "message":message})   
                 else:
                     tasksArray = []                    
-                    imageArray=["https://siteapp.pythonanywhere.com/media/"]
                     message = "No Result Found."
                     return Response({"data":tasksArray, "image_url":imageArray, "sucess":False, "message":message})    
             else:
                 tasksArray = []
-                imageArray=["https://siteapp.pythonanywhere.com/media/"]
                 message = "fault_id missing"
                 return Response({"data":tasksArray, "image_url":imageArray,"sucess":False, "message":message})    
                    
         except Exception as e:
             tasksArray = []
-            imageArray=["https://siteapp.pythonanywhere.com/media/"]
+            imageArray="https://siteapp.pythonanywhere.com/media/"
             # message = "Something went wrong"
             message = str(e)
 
