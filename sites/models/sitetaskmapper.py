@@ -16,9 +16,7 @@ class SiteTaskMapper(models.Model):
     RESOURCE_FLAG = (
         ('YES', 'YES'),
         ('NO', 'NO'),
-        
     )
-    
     
     projects = models.ForeignKey(Projects, blank=True, null=True, related_name="sitetaskmapper_projects", on_delete=models.CASCADE)
     sites = models.ForeignKey(Sites, blank=True, null=True, related_name="sitetaskmapper_sites", on_delete=models.CASCADE)
@@ -33,9 +31,8 @@ class SiteTaskMapper(models.Model):
     file = models.FileField(upload_to=None, max_length=254, blank=True, null=True)
     created_by = models.ForeignKey(User, default=1, blank=True, related_name="sitetaskmapper_created_by", on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
-    modified_at = models.DateTimeField(default=timezone.now) 
-    
-    sequence_no = models.IntegerField(null=True)   
+    modified_at = models.DateTimeField(default=timezone.now)
+    sequence_no = models.IntegerField(null=True)
     site_engineer = models.ForeignKey(User, default=1, blank=True, related_name="sitetaskmapper_site_engineer", on_delete=models.CASCADE)
     resource_flag = models.CharField(
         max_length=30,
@@ -43,7 +40,6 @@ class SiteTaskMapper(models.Model):
         default='NO',
         blank=True, 
         null=True
-    )
-
+    )    
     class Meta:
         verbose_name_plural = "Site Tasks Mapper"
