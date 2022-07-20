@@ -22,5 +22,5 @@ urlpatterns = [
     path('update_task_details/', my_fault.UpdateTaskDetails.as_view(),name='update_task_details'),
     path('get_task_details/', my_fault.viewTaskDetails.as_view(),name='get_task_details'),
     path('getAllTaskStatus/',my_fault.GetAllTaskStatus.as_view(),name='getAllTaskStatus'),
-    path('update_task_tracking_status', my_fault.UpdateMySiteTaskStatus.as_view(),name="update_task_tracking_status")
+    path('update_task_tracking_status/', my_fault.UpdateMySiteTaskStatus.as_view(),name="update_task_tracking_status")
 ]
