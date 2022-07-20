@@ -57,9 +57,9 @@ class MyFault(APIView):
                     accpeted_by=faultList.accpeted_by_id
                 innserarray={}
                 innserarray.update({"site_id": faultList.id, "project_id": faultList.project_id_id, "site_name":faultList.site_name, 'site_details':faultList.site_details, "spoc_name": faultList.spoc_name, "spoc_contact": faultList.spoc_contact, "scheduled_date": faultList.scheduled_date, 'address': faultList.address, 'verification_status':faultList.verification_status, "latitude":faultList.latitude, "longitude":faultList.longitude, 'accpeted_by': accpeted_by, 'assigned_at': assignedDate})
-                tasks = SiteTaskMapper.objects.filter(sites=faultList.id, site_engineer=request.user)
                 tasksArray=[]
-                if (tasks):
+                tasks = SiteTaskMapper.objects.filter(sites=faultList.id, site_engineer=request.user)
+                if tasks:
                     for mapper in tasks:
                         insertTasks = {}
                         insertTasks.update({"task_mapper_id": mapper.id, "site_id": mapper.sites.id, "project_id": mapper.projects.id, "project_name": mapper.projects.project_name, "task_id": mapper.tasks.id, "task_name": mapper.tasks.task_name, "sequence_no": mapper.sequence_no, "resource_flag": mapper.resource_flag, "status": mapper.status})
