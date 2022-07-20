@@ -4,6 +4,7 @@ from .models.sitetasksummary import SiteTaskSummary
 from .models.sites import Sites
 from .models.sitetaskmapper import SiteTaskMapper
 from projects.models.projecttasks import ProjectTasks
+from tasks.models.tasks import Tasks
 from django.utils.html import format_html
 
 class TaskInline(admin.TabularInline):
@@ -43,8 +44,8 @@ class AdminSiteTaskSummary(admin.ModelAdmin):
     list_display =['sites','task_mapper_id','site_engineer', 'status','created_at', 'track_user', 'tracking_summary']
 
     def task_mapper_id(self,instance):
-        return SiteTaskMapper.tasks.task_name
-
+       return SiteTaskMapper.tasks.task_name
+   
     def track_user(self,instance):
         ticket_id=(instance)
         # print(ticket_id)        
