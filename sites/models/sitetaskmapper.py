@@ -32,7 +32,7 @@ class SiteTaskMapper(models.Model):
     created_by = models.ForeignKey(User, default=1, blank=True, related_name="sitetaskmapper_created_by", on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
     modified_at = models.DateTimeField(default=timezone.now)
-    sequence_no = models.IntegerField(null=True)
+    sequence_no = models.IntegerField(blank=True, null=True)
     site_engineer = models.ForeignKey(User, default=1, blank=True, related_name="sitetaskmapper_site_engineer", on_delete=models.CASCADE)
     resource_flag = models.CharField(
         max_length=30,
