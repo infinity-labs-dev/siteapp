@@ -1,3 +1,6 @@
+sites/migrations/__pycache__/
+sites/migrations/
+tasks/migrations/
 /static
 /siteapp/.env
 projects/migrations/
