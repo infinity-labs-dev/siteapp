@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from tasks.models.tasks import Tasks
+
 from .models.sitetasksummary import SiteTaskSummary
 from .models.sites import Sites
 from .models.sitetaskmapper import SiteTaskMapper
@@ -39,15 +41,16 @@ class AdminSites(admin.ModelAdmin):
         obj.save()     
 
 class AdminSiteTaskSummary(admin.ModelAdmin): 
-    model = SiteTaskSummary
-    list_display =['sites','task_mapper_id','site_engineer', 'status','created_at', 'track_user', 'tracking_summary']
+    list_display =['sites', 'site_task', 'site_engineer', 'status','created_at', 'track_user', 'tracking_summary']
 
-    def task_mapper_id(self,instance):
-        return SiteTaskMapper.tasks.task_name
+    def site_task(self,instance):
+        task_mapper_id_id = instance.task_mapper_id_id
+        mapperObject = SiteTaskMapper.objects.get(id=task_mapper_id_id)
+        taskObject = Tasks.objects.get(id=mapperObject.tasks_id)
+        return taskObject.task_name        
 
     def track_user(self,instance):
         ticket_id=(instance)
-        # print(ticket_id)        
         return format_html(f'''<a href='/resource_tracking/track_user/?ticket_id={ticket_id}' style="padding: 5px ;" target="_blank" rel="noopener noreferrer">View<a/>''')
     
     def tracking_summary(self, instance):

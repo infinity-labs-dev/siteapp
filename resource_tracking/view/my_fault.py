@@ -636,9 +636,11 @@ class viewTaskDetails(APIView):
                 tasks=SiteTaskMapper.objects.filter(id=task_mapper_id)
                 print(tasks)
                 if tasks:
+                    trackingStatus = SiteTaskSummary.objects.get(task_mapper_id_id=task_mapper_id)
+                    trackingStatus = trackingStatus.status
                     for t in tasks:
                         insertArray={}
-                        insertArray.update({"task_mapper_id": t.id, "sites_id": t.sites_id, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "sequence_no": t.sequence_no, "resource_flag": t.resource_flag, "status": t.status, "file": str(t.file), "created_at": t.created_at})
+                        insertArray.update({"task_mapper_id": t.id, "sites_id": t.sites_id, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "sequence_no": t.sequence_no, "resource_flag": t.resource_flag, "tracking_status": trackingStatus, "status": t.status, "file": str(t.file), "created_at": t.created_at})
                         # print("tasksArray", tasksArray)
                     tasksArray.append(insertArray)
                     
@@ -702,19 +704,35 @@ class UpdateMySiteTaskStatus(APIView):
             faultArray=[]
                 
             data=request.data
+            sites_id = data['sites_id']
             task_mapper_id = data['task_mapper_id']
             user_id = data['user_id']
             status = data['status']
             
-            result = SiteTaskSummary.objects.get(task_mapper_id=task_mapper_id)
-            result.status = status            
-            result.save()
+            if (status == "START TRACKING"):
+                checkExisting = SiteTaskSummary.objects.filter(sites_id=sites_id, site_engineer_id=user_id, task_mapper_id_id=task_mapper_id)
+                if (checkExisting):
+                    result = SiteTaskSummary.objects.get(task_mapper_id_id=task_mapper_id)
+                    result.status = status            
+                    result.save()
+                else:    
+                    object = SiteTaskSummary()
+                    object.task_mapper_id_id = task_mapper_id
+                    object.sites_id = sites_id
+                    object.site_engineer_id = user_id
+                    object.status = status
+                    object.save()
+            else:                
+                result = SiteTaskSummary.objects.get(task_mapper_id_id=task_mapper_id)
+                result.status = status            
+                result.save()
             
-            updatedResult = SiteTaskSummary.objects.filter(task_mapper_id=task_mapper_id)
+            updatedResult = SiteTaskSummary.objects.filter(task_mapper_id_id=task_mapper_id)
+            print(updatedResult)
             if updatedResult:
                 for t in updatedResult:
                     innserarray={}
-                    innserarray.update({"row_id": t.id, "task_mapper_id": t.task_mapper_id_id, "sites_id": t.sites_id, "site_name": t.sites.site_name, "status": t.status})
+                    innserarray.update({"site_task_tracking_id": t.id, "status": t.status})
         
                     faultArray.append(innserarray)
             
