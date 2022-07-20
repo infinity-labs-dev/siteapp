@@ -1,9 +1,10 @@
 from django.contrib import admin
+
+from .models.sitetasksummary import SiteTaskSummary
 from .models.sites import Sites
-from tasks.models.tasks import Tasks
-from projects.models.projects import Projects
 from .models.sitetaskmapper import SiteTaskMapper
 from projects.models.projecttasks import ProjectTasks
+from django.utils.html import format_html
 
 class TaskInline(admin.TabularInline):
     model = SiteTaskMapper
@@ -35,7 +36,24 @@ class AdminSites(admin.ModelAdmin):
                 status="PENDING",
                 created_by_id=1
             )
-        obj.save()      
-        
+        obj.save()     
+
+class AdminSiteTaskSummary(admin.ModelAdmin): 
+    model = SiteTaskSummary
+    list_display =['sites','task_mapper_id','site_engineer', 'status','created_at', 'track_user', 'tracking_summary']
+
+    def task_mapper_id(self,instance):
+        return SiteTaskMapper.tasks.task_name
+
+    def track_user(self,instance):
+        ticket_id=(instance)
+        # print(ticket_id)        
+        return format_html(f'''<a href='/resource_tracking/track_user/?ticket_id={ticket_id}' style="padding: 5px ;" target="_blank" rel="noopener noreferrer">View<a/>''')
+    
+    def tracking_summary(self, instance):
+        ticket_id=(instance)
+        return format_html(f'''<a href='/resource_tracking/track_summary/?ticket_id={ticket_id}' style="padding: 5px ;" target="_blank" rel="noopener noreferrer">View<a/>''')
+
 # Register your SITE models here.
 admin.site.register(Sites, AdminSites)
+admin.site.register(SiteTaskSummary, AdminSiteTaskSummary)
