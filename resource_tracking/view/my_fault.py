@@ -140,7 +140,7 @@ class MyFaultView(APIView):
                 return Response({"data":faultArray, "image_url":imageArray,"sucess":False, "message":message})
 
         except Exception as e:
-            print("error ***", e)
+            # print("error ***", e)
             faultArray = []
             imageArray="https://siteapp.pythonanywhere.com/media/"
             # message = "Something went wrong"
@@ -321,7 +321,7 @@ class UpdateMyFaultStatus(APIView):
                     alluser=sendUserList.user.all()
                     for user in alluser:
                         if user!=request.user:
-                            print("here")
+                            # print("here")
                             pushResponse = send_push_notification(user,message)
                             if pushResponse:
                                     pushObject = PushNotificationLog()
@@ -546,7 +546,7 @@ class ResolvedMyFaultStatus(APIView):
                     alluser=sendUserList.user.all()
                     for user in alluser:
                         if user!=request.user:
-                            print("here")
+                            # print("here")
                             pushResponse = send_push_notification(user,message)
                             if pushResponse:
                                     pushObject = PushNotificationLog()
@@ -589,7 +589,7 @@ class UpdateTaskDetails(APIView):
                 file = request.data['file']
             else:
                 file = ''
-            print("file ==", file)
+            # print("file ==", file)
             
             result = SiteTaskMapper.objects.get(id=task_mapper_id)
             result.status = status
@@ -620,9 +620,10 @@ class UpdateTaskDetails(APIView):
 class viewTaskDetails(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
-        try:
+        # try:
             #  static vars
             httpString=""
+            trackingStatus=""
             if request.is_secure():
                 httpString="https://"
             else:
@@ -634,11 +635,17 @@ class viewTaskDetails(APIView):
             if task_mapper_id is not None and task_mapper_id != '' :
                 tasksArray=[]
                 tasks=SiteTaskMapper.objects.filter(id=task_mapper_id)
-                print(tasks)
+                # print(tasks)
                 if tasks:
+                    trackingObject = SiteTaskSummary.objects.filter(task_mapper_id_id=task_mapper_id).first()
+                    # print("trackingObject : ", trackingObject)
+                    if trackingObject != None:
+                        trackingStatus = trackingObject.status
+                    else:
+                        trackingStatus = "STAND BY"
                     for t in tasks:
                         insertArray={}
-                        insertArray.update({"task_mapper_id": t.id, "sites_id": t.sites_id, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "sequence_no": t.sequence_no, "resource_flag": t.resource_flag, "status": t.status, "file": str(t.file), "created_at": t.created_at})
+                        insertArray.update({"task_mapper_id": t.id, "sites_id": t.sites_id, "projects_id": t.projects_id, "project_id_name": t.projects.project_id, "project_name": t.projects.project_name, "tasks_id": t.tasks_id, "task_name": t.tasks.task_name, "sequence_no": t.sequence_no, "resource_flag": t.resource_flag, "tracking_status": trackingStatus, "status": t.status, "file": str(t.file), "created_at": t.created_at})
                         # print("tasksArray", tasksArray)
                     tasksArray.append(insertArray)
                     
@@ -654,13 +661,13 @@ class viewTaskDetails(APIView):
                 message = "fault_id missing"
                 return Response({"data":tasksArray, "image_url":imageArray,"sucess":False, "message":message})    
                    
-        except Exception as e:
-            tasksArray = []
-            imageArray="https://siteapp.pythonanywhere.com/media/"
-            # message = "Something went wrong"
-            message = str(e)
+        # except Exception as e:
+        #     tasksArray = []
+        #     imageArray="https://siteapp.pythonanywhere.com/media/"
+        #     # message = "Something went wrong"
+        #     message = str(e)
 
-            return Response({"data":tasksArray, "images":imageArray, "sucess":False, "message":message})
+        #     return Response({"data":tasksArray, "images":imageArray, "sucess":False, "message":message})
         
 class GetAllTaskStatus(APIView):
     permission_classes = (IsAuthenticated,)
@@ -702,19 +709,35 @@ class UpdateMySiteTaskStatus(APIView):
             faultArray=[]
                 
             data=request.data
+            sites_id = data['sites_id']
             task_mapper_id = data['task_mapper_id']
             user_id = data['user_id']
             status = data['status']
             
-            result = SiteTaskSummary.objects.get(task_mapper_id=task_mapper_id)
-            result.status = status            
-            result.save()
+            if (status == "START TRACKING"):
+                checkExisting = SiteTaskSummary.objects.filter(sites_id=sites_id, site_engineer_id=user_id, task_mapper_id_id=task_mapper_id)
+                if (checkExisting):
+                    result = SiteTaskSummary.objects.get(sites_id=sites_id, site_engineer_id=user_id, task_mapper_id_id=task_mapper_id)
+                    result.status = status            
+                    result.save()
+                else:    
+                    object = SiteTaskSummary()
+                    object.task_mapper_id_id = task_mapper_id
+                    object.sites_id = sites_id
+                    object.site_engineer_id = user_id
+                    object.status = status
+                    object.save()
+            else:                
+                result = SiteTaskSummary.objects.get(sites_id=sites_id, site_engineer_id=user_id, task_mapper_id_id=task_mapper_id)
+                result.status = status            
+                result.save()
             
-            updatedResult = SiteTaskSummary.objects.filter(task_mapper_id=task_mapper_id)
+            updatedResult = SiteTaskSummary.objects.filter(sites_id=sites_id, site_engineer_id=user_id, task_mapper_id_id=task_mapper_id)
+            # print(updatedResult)
             if updatedResult:
                 for t in updatedResult:
                     innserarray={}
-                    innserarray.update({"row_id": t.id, "task_mapper_id": t.task_mapper_id_id, "sites_id": t.sites_id, "site_name": t.sites.site_name, "status": t.status})
+                    innserarray.update({"site_task_tracking_id": t.id, "status": t.status})
         
                     faultArray.append(innserarray)
             
