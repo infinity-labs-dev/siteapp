@@ -1,3 +1,4 @@
+from asyncio import tasks
 from django.contrib.auth.models import User
 from django.db.models.fields import NullBooleanField
 from django.http.response import JsonResponse
@@ -7,6 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from resource_tracking.models.fault_management import FaultManagement
+from sites.models.sitetasksummary import SiteTaskSummary
 from sites.models.sites import Sites
 from resource_tracking.models.site_tracking import SiteTracking
 from sites.models.sitetaskmapper import SiteTaskMapper
@@ -36,6 +38,8 @@ from resource_tracking.utils import saveSiteTracking
 from projects.models.projecttasks import ProjectTasks
 from sites.models.sitetaskmapper import SiteTaskMapper
 from tasks.models.tasks import Tasks
+
+from resource_tracking.serializers import SiteTaskSummarySerializer
 
 # view fault site list
 class MyFault(APIView):
@@ -681,4 +685,46 @@ class GetAllTaskStatus(APIView):
             siteArray = []
             permissions = []
             message = str(e)
-            return Response({"data":siteArray,"sucess":False, "message":message})       
+            return Response({"data":siteArray,"sucess":False, "message":message}) 
+
+# update my site task status by id
+class UpdateMySiteTaskStatus(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request):
+        try:
+            # static vars
+            httpString=""
+            if request.is_secure():
+                httpString="https://"
+            else:
+                httpString="http://"         
+            
+            faultArray=[]
+                
+            data=request.data
+            task_mapper_id = data['task_mapper_id']
+            user_id = data['user_id']
+            status = data['status']
+            
+            result = SiteTaskSummary.objects.get(task_mapper_id=task_mapper_id)
+            result.status = status            
+            result.save()
+            
+            updatedResult = SiteTaskSummary.objects.filter(task_mapper_id=task_mapper_id)
+            if updatedResult:
+                for t in updatedResult:
+                    innserarray={}
+                    innserarray.update({"row_id": t.id, "task_mapper_id": t.task_mapper_id_id, "sites_id": t.sites_id, "site_name": t.sites.site_name, "status": t.status})
+        
+                    faultArray.append(innserarray)
+            
+            message = "Site Task Tracking details updated successfully"            
+            return Response({"data":faultArray, "sucess":True, "message":message})
+            
+        except Exception as e:
+            # print("error ***", e)
+            faultArray = []
+            message = str(e)
+
+            return Response({"data":faultArray, "sucess":False, "message":message})    
+
