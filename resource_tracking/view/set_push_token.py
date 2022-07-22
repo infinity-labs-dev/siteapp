@@ -15,6 +15,7 @@ from resource_tracking.models.fault_management import FaultManagement
 from django.core import serializers
 from django.http import JsonResponse
 from resource_tracking.serializers import FaultManagementSerializer
+from resource_tracking.serializers import SiteTaskSummarySerializer
 from push_notifications.models import APNSDevice, GCMDevice
 
 from django.db.models import Q
@@ -28,21 +29,21 @@ import requests
 # Get Fault List By Status
 class SetPushToken(APIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = FaultManagementSerializer
+    #serializer_class = FaultManagementSerializer
+    serializer_class = SiteTaskSummarySerializer
     def get(self, request):
 
         device = GCMDevice.objects.get(user=request.user)
-        # result=device.send_message(message={"title" : "Game Request", "body" : "Bob wants to play poker"})
-        # return Response({"data":result})
+        #result=device.send_message(message={"title" : "Game Request", "body" : "Bob wants to play poker"})
+        #return Response({"data":result})
 
         if device:
             deviceToken=device.registration_id
-            print(deviceToken)
-        serverToken = 'AAAAYPp4Yno:APA91bGnqQXODPLw07e41hgFsqtoJZmulIi49S-w-f1Aa5oGg_7e4xeTXnPv4hdy8FjMCaaGvT1r5psDD1Ch9WU9V46C8fKggrUAvweNtKSdU7k5OYXelVTpeLNYRRu9aSVj0zxkJ2Mz'
-        # deviceToken = 'cxMg7GDBSGCOL5TX1gzw_6:APA91bHKJ8OQJ8zWhfV6koiaKCbE44D0X853PMSLonpjWaq8pw2fESc8e1vl_oqRJphjmwPWnBHXnxLGimys2nI_EELJ9dG0ISAqLqn2WDd1Ly1r90l6Cn8h0Esf_BfEyN_T6b6sbkXU'
-
+            #print(deviceToken)
+            serverToken = 'BEDH8OBSVsAlX5LUEne2xUsp587YP5moRMM7etPOZC3rNzSYzZHH-X9SSimiwPeWlFKS4ksPGMa4K1ZkQLNSuRA'
+            #deviceToken = 'fjPY93E_Sg2iidOFMFPcTz:APA91bGWvMc9AyNBiiSq_Mn52ne7dCL95zEUo_YXqGbPGJAoRh3cjVuDOyNKLyN5dvEsMDCW9oFXlh5-NJ23OTxy1vj1tIJ0tPdCBe1eWnYXvS-Z22XQsa8F-Jsvz3LhmiEV-iOWhp8b'
         headers = {
-                'Content-Type': 'application/json',
+               'Content-Type': 'application/json',
                 'Authorization': 'key=' + serverToken,
             }
 
@@ -56,11 +57,12 @@ class SetPushToken(APIView):
                 #   'data': dataPayLoad,
                 }
         response = requests.post("https://fcm.googleapis.com/fcm/send",headers = headers, data=json.dumps(body))
+        #print(response)
         if request.is_secure():
             httpString="https://"
         else:
             httpString="http://"
-        return Response({"data":response,"sucess":True,"message":"","path":httpString+request.META['SERVER_NAME']+"/media/fault_images/IMG_20210810_145756_57.jpg"})
+        return Response({"data":response,"sucess":True,"message":"ok hi"})
 
 
     def post(self, request):
