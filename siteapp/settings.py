@@ -97,7 +97,7 @@ SIMPLE_JWT = {
 }
 
 PUSH_NOTIFICATIONS_SETTINGS = {
-    "FCM_API_KEY": "",    
+    "FCM_API_KEY": "BDfucXWTxD8XpvomGW0jD0HRZGlwjYKwJkb-q3WsZnyoHxhX7_pefXXFuPmK_S5R2LTsX-Kmi4f_8b60tRNmlBs",    
 }
 
 WSGI_APPLICATION = 'siteapp.wsgi.application'
