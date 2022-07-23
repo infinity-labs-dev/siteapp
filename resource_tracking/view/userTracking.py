@@ -1,3 +1,4 @@
+import site
 import sys
 from django.conf import Settings
 from django.http import HttpResponse
@@ -8,6 +9,8 @@ import haversine as hs
 # folium - map intergration
 import folium
 from resource_tracking.models.fault_management import FaultManagement
+from sites.models.sitetasksummary import SiteTaskSummary
+from sites.models.sitetaskmapper import SiteTaskMapper
 
 # pyrebase - firebase integration
 import pyrebase
@@ -25,17 +28,22 @@ auth =firebase.auth()
 database=firebase.database()
 
 class UserTracking(View):
-    
     def get(self, request):
-        # print(request.GET['ticket_id'])
+        #print(request.GET['ticket_id'])
         try:
-            # params                
-            ticket_id = request.GET['ticket_id']  
-            ticket=FaultManagement.objects.get(id=ticket_id)
+            # params     
+                     
+            data=request.data
+            sites_id = data['sites_id']
+            task_mapper_id = data['task_mapper_id']           
+            ticket=SiteTaskSummary.objects.get(task_mapper_id_id=task_mapper_id)
+            
+            # ticket_id = request.GET['ticket_id']  
+            # ticket=FaultManagement.objects.get(id=ticket_id)
             # print('tickete ===*****', ticket)            
-            user_id=ticket.user.id
+            user_id=ticket.site_engineer_id
             # print('user_id *****', user_id)
-            site_id=ticket.site.id
+            site_id=ticket.sites_id
             # print('site_id +++++', site_id)
             
             # static variables
@@ -45,7 +53,8 @@ class UserTracking(View):
             
 
             # -- firebase records --
-            result_set=database.child(user_id).child(site_id).child(ticket_id).get().val()        
+            #result_set=database.child(user_id).child(site_id).child(ticket_id).get().val()        
+            result_set=database.child(user_id).child(site_id).child(task_mapper_id).get().val()
             # print('type == ', type(user))
             if(result_set):
                 # print('result_set ==', result_set)
@@ -100,7 +109,7 @@ class UserTracking(View):
                 
                 context = {
                     'map': map,
-                    'final_result_list':final_result_list,
+                   # 'final_result_list':final_result_list,
                 } 
                 # print('context', context)       
                 return render(request, "tracking.html", context)    
