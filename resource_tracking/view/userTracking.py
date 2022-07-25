@@ -19,7 +19,7 @@ config={
     "storageBucket": "gs://infinityandroid-151bc.appspot.com",    
     "apiKey": "MGcMpUOevOtCbmcLpYRTdIGgKUDYvjBL3zbDQNe7",
     "messagingSenderId": "154765625214",
-    "databaseURL": "https://infinityandroid-151bc-default-rtdb.firebaseio.com/",
+    "databaseURL": "https://siteappmerge-default-rtdb.firebaseio.com/",
     "projectId": "infinityandroid-151bc",
     "appId": "1:154765625214:android:ceb9a261f27456588f552f",
 }
@@ -27,35 +27,25 @@ firebase=pyrebase.initialize_app(config)
 auth =firebase.auth()
 database=firebase.database()
 
+# track user over map
 class UserTracking(View):
     def get(self, request):
         #print(request.GET['ticket_id'])
         try:
-            # params     
-                     
-            data=request.data
-            sites_id = data['sites_id']
-            task_mapper_id = data['task_mapper_id']           
-            ticket=SiteTaskSummary.objects.get(task_mapper_id_id=task_mapper_id)
-            
-            # ticket_id = request.GET['ticket_id']  
-            # ticket=FaultManagement.objects.get(id=ticket_id)
-            # print('tickete ===*****', ticket)            
+            # params             
+            ticket_id = request.GET['ticket_id']  
+            ticket=SiteTaskMapper.objects.get(id=ticket_id)
+            print('ticket ===*****', ticket)                        
             user_id=ticket.site_engineer_id
-            # print('user_id *****', user_id)
             site_id=ticket.sites_id
-            # print('site_id +++++', site_id)
             
             # static variables
             place_lat = []
             place_lng = []          
             final_result_list = []
             
-
             # -- firebase records --
-            #result_set=database.child(user_id).child(site_id).child(ticket_id).get().val()        
-            result_set=database.child(user_id).child(site_id).child(task_mapper_id).get().val()
-            # print('type == ', type(user))
+            result_set=database.child(user_id).child(site_id).child(ticket_id).get().val()
             if(result_set):
                 # print('result_set ==', result_set)
                 for coordinates in result_set.values():
@@ -63,10 +53,6 @@ class UserTracking(View):
                     place_lat.append(coordinates["latitude"])
                     place_lng.append(coordinates["longitude"])
                     
-                    # print("mode: ==", coordinates["mode"])
-                    # print("lat: ==", coordinates["latitude"])
-                    # print("long: ==", coordinates["longitude"])
-                    # print("timestamp: ==", coordinates["timestamp"])
                     newObject.append(coordinates['mode'])
                     newObject.append(coordinates['latitude'])
                     newObject.append(coordinates['longitude'])
@@ -78,9 +64,7 @@ class UserTracking(View):
                     
                 # -- map --        
                 map = folium.Map(width=1260, height=540, location=[place_lat[0], place_lng[0]], zoom_start=16)
-                
-                # place_lat = [18.5642, 18.6011, 18.5602, 18.5074]
-                # place_lng = [73.7769, 73.7641, 73.8031, 73.8077]
+                                
                 print("len(place_lng)===", len(place_lng))
                 points = []
                 for i in range(len(place_lat)):
@@ -103,13 +87,13 @@ class UserTracking(View):
                                 popup="",
                                 icon = folium.Icon(color='red',icon='plus')).add_to(map)         
                     
-                # folium.PolyLine(points, color='green').add_to(map)            
+                folium.PolyLine(points, color='green').add_to(map)            
                 map = map._repr_html_()        
                 # !! map !!            
                 
                 context = {
                     'map': map,
-                   # 'final_result_list':final_result_list,
+                   'final_result_list':final_result_list,
                 } 
                 # print('context', context)       
                 return render(request, "tracking.html", context)    
@@ -128,19 +112,18 @@ class UserTracking(View):
             print("%s - %s at line: %s" % (sys.exc_info()
             [0], sys.exc_info()[1], sys.exc_info()[2].tb_lineno))
             # pass
-            
+
+# user tracking summary - tabular view            
 class TrackSummary(View):
     def get(self, request):
         # print(request.GET['ticket_id'])
         try:
             # params                
             ticket_id = request.GET['ticket_id']  
-            ticket=FaultManagement.objects.get(id=ticket_id)
-            # print('tickete ===*****', ticket)            
-            user_id=ticket.user.id
-            # print('user_id *****', user_id)
-            site_id=ticket.site.id
-            # print('site_id +++++', site_id)
+            ticket=SiteTaskMapper.objects.get(id=ticket_id)
+            print('ticket ===*****', ticket)            
+            user_id=ticket.site_engineer_id
+            site_id=ticket.sites_id
             
             # static variables       
             final_result_list = []
@@ -148,16 +131,12 @@ class TrackSummary(View):
             place_lat=[]
             place_lng=[]
             loc1=[]
-            loc2=[]
-            # print("type == ", location1)
-            # loc1=(28.426846,77.088834)
-            # loc2=(28.394231,77.050308)
+            loc2=[]        
 
             # -- firebase records --
             result_set=database.child(user_id).child(site_id).child(ticket_id).get().val()        
-            # print('type == ', type(user))
             if(result_set):
-                # print('result_set ==', result_set)
+                print('result_set ==', result_set)
                 for coordinates in result_set.values():
                     place_lat.append(coordinates["latitude"])
                     place_lng.append(coordinates["longitude"]) 
@@ -185,15 +164,9 @@ class TrackSummary(View):
                     point_distance_list.append(total_distance_traveled)
                     summation_distance+=total_distance_traveled
                     summation_distance_list.append(summation_distance)
-            
-                # print("point_distance_list======",point_distance_list)
-                # print("len==",len(point_distance_list))
+                            
                 total_distance_traveled = str(round(sum(point_distance_list), 2))
                                 
-                # total_distance_traveled = hs.haversine(loc1,loc2)
-                # total_distance_traveled = str(round(total_distance_traveled, 2))
-                # print("total_distance_traveled ===", total_distance_traveled)            
-                # print("len final_result_list",len(final_result_list))
                 i=0
                 for coordinates in result_set.values():
                     newObject = []                  
