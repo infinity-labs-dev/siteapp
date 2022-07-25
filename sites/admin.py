@@ -31,7 +31,6 @@ class AdminSites(admin.ModelAdmin):
         tasks = ProjectTasks.objects.raw('SELECT * FROM projects_projecttasks_tasks WHERE projecttasks_id ='+ project_id)
         print("tasks", tasks)
         for e in tasks:
-            # print("e.projecttasks_id ==", e.projecttasks_id)
             SiteTaskMapper.objects.update_or_create(
                 projects_id=project_id,
                 sites_id=site_id,
@@ -42,7 +41,7 @@ class AdminSites(admin.ModelAdmin):
         obj.save()     
 
 class AdminSiteTaskSummary(admin.ModelAdmin): 
-    list_display =['sites', 'site_task', 'site_engineer', 'status','created_at', 'track_user', 'tracking_summary']
+    list_display =['id', 'sites', 'site_task', 'site_engineer', 'status','created_at', 'track_user', 'tracking_summary']
 
     def site_task(self,instance):
         task_mapper_id_id = instance.task_mapper_id_id
@@ -51,13 +50,12 @@ class AdminSiteTaskSummary(admin.ModelAdmin):
         return taskObject.task_name        
 
     def track_user(self,instance):
-        # ticket_id=(instance)
-        # print(ticket_id)
-        task_mapper_id_id = instance.task_mapper_id_id
+        # print('instance.task_mapper_id_id ==', instance.task_mapper_id_id)
+        task_mapper_id_id=instance.task_mapper_id_id
         return format_html(f'''<a href='/resource_tracking/track_user/?ticket_id={task_mapper_id_id}' style="padding: 5px ;" target="_blank" rel="noopener noreferrer">View<a/>''')
     
     def tracking_summary(self, instance):
-        #ticket_id=(instance)
+        # ticket_id=(instance)
         task_mapper_id_id = instance.task_mapper_id_id
         return format_html(f'''<a href='/resource_tracking/track_summary/?ticket_id={task_mapper_id_id}' style="padding: 5px ;" target="_blank" rel="noopener noreferrer">View<a/>''')
 
