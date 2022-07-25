@@ -54,14 +54,12 @@ class AdminSiteTaskSummary(admin.ModelAdmin):
         # ticket_id=(instance)
         # print(ticket_id)
         task_mapper_id_id = instance.task_mapper_id_id
-        mapperObject = SiteTaskMapper.objects.get(id=task_mapper_id_id)
-        return format_html(f'''<a href='/resource_tracking/track_user/?ticket_id={mapperObject.id}' style="padding: 5px ;" target="_blank" rel="noopener noreferrer">View<a/>''')
+        return format_html(f'''<a href='/resource_tracking/track_user/?ticket_id={task_mapper_id_id}' style="padding: 5px ;" target="_blank" rel="noopener noreferrer">View<a/>''')
     
     def tracking_summary(self, instance):
         #ticket_id=(instance)
         task_mapper_id_id = instance.task_mapper_id_id
-        mapperObject = SiteTaskMapper.objects.get(id=task_mapper_id_id)
-        return format_html(f'''<a href='/resource_tracking/track_summary/?ticket_id={mapperObject.id}' style="padding: 5px ;" target="_blank" rel="noopener noreferrer">View<a/>''')
+        return format_html(f'''<a href='/resource_tracking/track_summary/?ticket_id={task_mapper_id_id}' style="padding: 5px ;" target="_blank" rel="noopener noreferrer">View<a/>''')
 
 # Register your SITE models here.
 admin.site.register(Sites, AdminSites)

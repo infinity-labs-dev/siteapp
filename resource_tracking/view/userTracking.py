@@ -29,22 +29,18 @@ database=firebase.database()
 
 class UserTracking(View):
     def get(self, request):
-        #print(request.GET['ticket_id'])
         try:
             # params     
-                     
-            data=request.data
-            sites_id = data['sites_id']
-            task_mapper_id = data['task_mapper_id']           
-            ticket=SiteTaskSummary.objects.get(task_mapper_id_id=task_mapper_id)
-            
-            # ticket_id = request.GET['ticket_id']  
-            # ticket=FaultManagement.objects.get(id=ticket_id)
-            # print('tickete ===*****', ticket)            
+            #task_mapper_id = data['task_mapper_id_id']           
+            #ticket=SiteTaskSummary.objects.get(task_mapper_id_id=task_mapper_id)            
+            ticket_id = request.GET['ticket_id']
+            print(ticket_id)
+            ticket=SiteTaskMapper.objects.get(id=ticket_id)
+            print('ticket ===*****', ticket)
+                                  
             user_id=ticket.site_engineer_id
-            # print('user_id *****', user_id)
             site_id=ticket.sites_id
-            # print('site_id +++++', site_id)
+            print('site_id +++++', site_id)
             
             # static variables
             place_lat = []
@@ -53,8 +49,8 @@ class UserTracking(View):
             
 
             # -- firebase records --
-            #result_set=database.child(user_id).child(site_id).child(ticket_id).get().val()        
-            result_set=database.child(user_id).child(site_id).child(task_mapper_id).get().val()
+            result_set=database.child(user_id).child(site_id).child(ticket_id).get().val()        
+            #result_set=database.child(user_id).child(site_id).child(task_mapper_id).get().val()
             # print('type == ', type(user))
             if(result_set):
                 # print('result_set ==', result_set)
@@ -135,12 +131,11 @@ class TrackSummary(View):
         try:
             # params                
             ticket_id = request.GET['ticket_id']  
-            ticket=FaultManagement.objects.get(id=ticket_id)
-            # print('tickete ===*****', ticket)            
-            user_id=ticket.user.id
-            # print('user_id *****', user_id)
-            site_id=ticket.site.id
-            # print('site_id +++++', site_id)
+            ticket=SiteTaskMapper.objects.get(id=ticket_id)
+            print('ticket ===*****', ticket)            
+            user_id=ticket.site_engineer_id
+            site_id=ticket.sites_id
+            
             
             # static variables       
             final_result_list = []
