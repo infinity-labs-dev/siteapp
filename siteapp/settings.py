@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-zatm5!axc@7&=6g=ls4em39rmk2__rfdp130o@ghi47qmt7lzb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.216', 'siteapp.pythonanywhere.com', '192.168.1.146', ]
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.216', 'siteapp.pythonanywhere.com', '192.168.1.146',  ]
 
 
 # Application definition
@@ -97,7 +97,7 @@ SIMPLE_JWT = {
 }
 
 PUSH_NOTIFICATIONS_SETTINGS = {
-    "FCM_API_KEY": "BDfucXWTxD8XpvomGW0jD0HRZGlwjYKwJkb-q3WsZnyoHxhX7_pefXXFuPmK_S5R2LTsX-Kmi4f_8b60tRNmlBs",    
+    "FCM_API_KEY": "",    
 }
 
 WSGI_APPLICATION = 'siteapp.wsgi.application'

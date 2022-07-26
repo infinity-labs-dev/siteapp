@@ -30,7 +30,6 @@ database=firebase.database()
 # track user over map
 class UserTracking(View):
     def get(self, request):
-        #print(request.GET['ticket_id'])
         try:
             # params             
             ticket_id = request.GET['ticket_id']  
