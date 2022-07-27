@@ -42,7 +42,7 @@ class SetPushToken(APIView):
             #print(deviceToken)
             #serverToken = 'BEDH8OBSVsAlX5LUEne2xUsp587YP5moRMM7etPOZC3rNzSYzZHH-X9SSimiwPeWlFKS4ksPGMa4K1ZkQLNSuRA'
             serverToken = 'AAAA05cLoQc:APA91bG-HTbGSthanb_CBoF3y2R_mRtVa-lY7iS5K8PS4lb4E91WeINDut2M5cuRBDVZ9ICluVRWctdRWSVBy9OOiBHeFZ-D9V1I22apBbjfVwec9Vibez-CtLsz9IVEqhK6zHSU-ivG' 
-            # deviceToken = 'fjPY93E_Sg2iidOFMFPcTz:APA91bGWvMc9AyNBiiSq_Mn52ne7dCL95zEUo_YXqGbPGJAoRh3cjVuDOyNKLyN5dvEsMDCW9oFXlh5-NJ23OTxy1vj1tIJ0tPdCBe1eWnYXvS-Z22XQsa8F-Jsvz3LhmiEV-iOWhp8b'
+            #deviceToken = 'fjPY93E_Sg2iidOFMFPcTz:APA91bGWvMc9AyNBiiSq_Mn52ne7dCL95zEUo_YXqGbPGJAoRh3cjVuDOyNKLyN5dvEsMDCW9oFXlh5-NJ23OTxy1vj1tIJ0tPdCBe1eWnYXvS-Z22XQsa8F-Jsvz3LhmiEV-iOWhp8b'
         headers = {
                'Content-Type': 'application/json',
                'Authorization': 'key =' +serverToken,

@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from tasks.models.tasks import Tasks
 
 from .models.sitetasksummary import SiteTaskSummary
@@ -8,6 +7,11 @@ from .models.sitetaskmapper import SiteTaskMapper
 from projects.models.projecttasks import ProjectTasks
 from tasks.models.tasks import Tasks
 from django.utils.html import format_html
+
+import json
+from push_notifications.models import GCMDevice
+import requests
+from django.conf import settings
 
 class TaskInline(admin.TabularInline):
     model = SiteTaskMapper
@@ -39,6 +43,38 @@ class AdminSites(admin.ModelAdmin):
                 created_by_id=1
             )
         obj.save()     
+
+def send_push_notification(user,fault):
+    try:
+        device = GCMDevice.objects.get(user=user)
+        if device:
+            deviceToken=device.registration_id
+            # print("Token",deviceToken)
+            serverToken =settings.PUSH_NOTIFICATIONS_SETTINGS['FCM_API_KEY']
+            # print("Server",serverToken)
+            headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'key=' + serverToken,
+                }
+            body = {
+                    'data': {'title': 'Fault Assignment',
+                                        'body': fault.site.site_name+' assign to you'
+                                        },
+                    'to':
+                        deviceToken,
+                    'priority': 'high',
+                    #   'data': dataPayLoad,
+                    }
+
+
+            response = requests.post("https://fcm.googleapis.com/fcm/send",headers = headers, data=json.dumps(body))
+            # check what is the response
+            # print(response)
+            
+            return response
+    except Exception as e:
+        print(e) 
+        
 
 class AdminSiteTaskSummary(admin.ModelAdmin): 
     list_display =['id', 'sites', 'site_task', 'site_engineer', 'status','created_at', 'track_user', 'tracking_summary']
