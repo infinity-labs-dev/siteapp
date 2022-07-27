@@ -7,6 +7,10 @@ from .models.sitetaskmapper import SiteTaskMapper
 from projects.models.projecttasks import ProjectTasks
 from tasks.models.tasks import Tasks
 from django.utils.html import format_html
+from push_notifications.models import GCMDevice
+import requests
+import json
+from django.conf import settings
 
 import json
 from push_notifications.models import GCMDevice
@@ -27,6 +31,7 @@ class AdminSites(admin.ModelAdmin):
     
     def save_model(self, request, obj, form, change):
         # print("POST ===", request.POST)
+        # print("site_engineer", request.POST["site_engineer"])        
         obj.save()
         
         site_id = obj.id
@@ -42,23 +47,31 @@ class AdminSites(admin.ModelAdmin):
                 status="PENDING",
                 created_by_id=1
             )
-        obj.save()     
-
+        pushResponse = send_push_notification(request.POST["site_engineer"], site_id)        
+        print("pushResponse ==", pushResponse)                
+        obj.save() 
+            
 def send_push_notification(user,fault):
     try:
         device = GCMDevice.objects.get(user=user)
+        # print("device ===", device)
         if device:
+            # site details
+            site_details = Sites.objects.get(id=fault)
+            if site_details:
+                siteD = site_details.site_name
+            else:
+                 siteD = "New Site"   
+            
             deviceToken=device.registration_id
-            # print("Token",deviceToken)
-            serverToken =settings.PUSH_NOTIFICATIONS_SETTINGS['FCM_API_KEY']
-            # print("Server",serverToken)
+            serverToken = settings.PUSH_NOTIFICATIONS_SETTINGS['FCM_API_KEY']
             headers = {
                     'Content-Type': 'application/json',
                     'Authorization': 'key=' + serverToken,
                 }
             body = {
-                    'data': {'title': 'Fault Assignment',
-                                        'body': fault.site.site_name+' assign to you'
+                    'data': {'title': 'Site Assigned',
+                                        'body': str(siteD)+' assigned to you.'
                                         },
                     'to':
                         deviceToken,
@@ -74,7 +87,6 @@ def send_push_notification(user,fault):
             return response
     except Exception as e:
         print(e) 
-        
 
 class AdminSiteTaskSummary(admin.ModelAdmin): 
     list_display =['id', 'sites', 'site_task', 'site_engineer', 'status','created_at', 'track_user', 'tracking_summary']

@@ -30,7 +30,7 @@ import requests
 class SetPushToken(APIView):
     permission_classes = (IsAuthenticated,)
     #serializer_class = FaultManagementSerializer
-    #serializer_class = SiteTaskSummarySerializer
+    serializer_class = SiteTaskSummarySerializer
     def get(self, request):
         
         device = GCMDevice.objects.get(user=request.user)
@@ -40,9 +40,7 @@ class SetPushToken(APIView):
         if device:
             deviceToken=device.registration_id
             #print(deviceToken)
-            #serverToken = 'BEDH8OBSVsAlX5LUEne2xUsp587YP5moRMM7etPOZC3rNzSYzZHH-X9SSimiwPeWlFKS4ksPGMa4K1ZkQLNSuRA'
-            serverToken = 'AAAA05cLoQc:APA91bG-HTbGSthanb_CBoF3y2R_mRtVa-lY7iS5K8PS4lb4E91WeINDut2M5cuRBDVZ9ICluVRWctdRWSVBy9OOiBHeFZ-D9V1I22apBbjfVwec9Vibez-CtLsz9IVEqhK6zHSU-ivG' 
-            #deviceToken = 'fjPY93E_Sg2iidOFMFPcTz:APA91bGWvMc9AyNBiiSq_Mn52ne7dCL95zEUo_YXqGbPGJAoRh3cjVuDOyNKLyN5dvEsMDCW9oFXlh5-NJ23OTxy1vj1tIJ0tPdCBe1eWnYXvS-Z22XQsa8F-Jsvz3LhmiEV-iOWhp8b'
+            serverToken = 'AAAA05cLoQc:APA91bG-HTbGSthanb_CBoF3y2R_mRtVa-lY7iS5K8PS4lb4E91WeINDut2M5cuRBDVZ9ICluVRWctdRWSVBy9OOiBHeFZ-D9V1I22apBbjfVwec9Vibez-CtLsz9IVEqhK6zHSU-ivG'
         headers = {
                'Content-Type': 'application/json',
                'Authorization': 'key =' +serverToken,
@@ -50,7 +48,7 @@ class SetPushToken(APIView):
 
         body = {
                 'data': {'title': 'Fault Assigned !',
-                                    'body': 'Pradeep Site assigned to you, please check'
+                                    'body': 'New Site assigned to you, please check'
                                     },
                 'to':
                     deviceToken,
@@ -63,7 +61,7 @@ class SetPushToken(APIView):
             httpString="https://"
         else:
             httpString="http://"
-        return Response({"data":response,"sucess":True,"message":""})
+        return Response({"data":response,"sucess":True,"message":"","path":headers})
 
 
     def post(self, request):
@@ -84,7 +82,7 @@ class SetPushToken(APIView):
                 else:
                    fcm_device = GCMDevice.objects.create(registration_id=registration_id, cloud_message_type="FCM", user=request.user,name=username)
                 sucess=True
-                message=""
+                message="message true"
 
             else:
                 sucess=False
