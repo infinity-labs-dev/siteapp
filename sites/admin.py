@@ -12,10 +12,6 @@ import requests
 import json
 from django.conf import settings
 
-import json
-from push_notifications.models import GCMDevice
-import requests
-from django.conf import settings
 
 class TaskInline(admin.TabularInline):
     model = SiteTaskMapper

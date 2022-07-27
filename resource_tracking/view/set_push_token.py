@@ -47,7 +47,7 @@ class SetPushToken(APIView):
             }
 
         body = {
-                'data': {'title': 'Fault Assigned !',
+                'data': {'title': 'Site Assigned !',
                                     'body': 'New Site assigned to you, please check'
                                     },
                 'to':
