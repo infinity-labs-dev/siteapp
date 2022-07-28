@@ -130,7 +130,8 @@ class TrackSummary(View):
             place_lat=[]
             place_lng=[]
             loc1=[]
-            loc2=[]        
+            loc2=[]
+            traveled=0        
 
             # -- firebase records --
             result_set=database.child(user_id).child(site_id).child(ticket_id).get().val()        
@@ -165,7 +166,8 @@ class TrackSummary(View):
                     summation_distance_list.append(summation_distance)
                             
                 total_distance_traveled = str(round(sum(point_distance_list), 2))
-                                
+                traveled = total_distance_traveled * 1000.0
+                              
                 i=0
                 for coordinates in result_set.values():
                     newObject = []                  
@@ -183,7 +185,8 @@ class TrackSummary(View):
                 # print("final_result_list ============", final_result_list)   
                 context = {
                     'final_result_list':final_result_list,
-                    'total_distance_traveled':total_distance_traveled
+                    'total_distance_traveled':total_distance_traveled,
+                    'traveled':traveled
                 } 
                 # print('context', context)       
                 return render(request, "table_tracking.html", context)    
@@ -193,6 +196,7 @@ class TrackSummary(View):
                 context = {
                     'final_result_list':final_result_list,
                     'total_distance_traveled':total_distance_traveled,
+                    'traveled':traveled
                 } 
                 # print('context', context)       
                 return render(request, "table_tracking.html", context)               
