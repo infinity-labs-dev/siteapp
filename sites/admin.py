@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from tasks.models.tasks import Tasks
 
 from .models.sitetasksummary import SiteTaskSummary
@@ -12,6 +11,7 @@ from push_notifications.models import GCMDevice
 import requests
 import json
 from django.conf import settings
+
 
 class TaskInline(admin.TabularInline):
     model = SiteTaskMapper

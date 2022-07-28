@@ -116,22 +116,27 @@ class UserTracking(View):
 class TrackSummary(View):
     def get(self, request):
         # print(request.GET['ticket_id'])
+        
         try:
             # params                
             ticket_id = request.GET['ticket_id']  
+            print(ticket_id)
             ticket=SiteTaskMapper.objects.get(id=ticket_id)
-            print('ticket ===*****', ticket)            
+            print('ticket ===*****', ticket)   
+            # print('distance =' 0.03 * 1000)
             user_id=ticket.site_engineer_id
+            print(user_id)
             site_id=ticket.sites_id
-            
+            print(site_id)
             # static variables       
             final_result_list = []
             total_distance_traveled=0
+            traveled=0
             place_lat=[]
             place_lng=[]
             loc1=[]
             loc2=[]        
-
+            print(traveled)
             # -- firebase records --
             result_set=database.child(user_id).child(site_id).child(ticket_id).get().val()        
             if(result_set):
@@ -165,7 +170,7 @@ class TrackSummary(View):
                     summation_distance_list.append(summation_distance)
                             
                 total_distance_traveled = str(round(sum(point_distance_list), 2))
-                                
+                traveled = total_distance_traveled * 1000.0               
                 i=0
                 for coordinates in result_set.values():
                     newObject = []                  
@@ -183,16 +188,19 @@ class TrackSummary(View):
                 # print("final_result_list ============", final_result_list)   
                 context = {
                     'final_result_list':final_result_list,
-                    'total_distance_traveled':total_distance_traveled
+                    # 'total_distance_traveled':total_distance_traveled
+                    'traveled':traveled
                 } 
                 # print('context', context)       
                 return render(request, "table_tracking.html", context)    
             else:
                 final_result_list=[]
                 total_distance_traveled=0
+                traveled=0
                 context = {
                     'final_result_list':final_result_list,
-                    'total_distance_traveled':total_distance_traveled,
+                    # 'total_distance_traveled':total_distance_traveled,
+                    'traveled':traveled,
                 } 
                 # print('context', context)       
                 return render(request, "table_tracking.html", context)               
