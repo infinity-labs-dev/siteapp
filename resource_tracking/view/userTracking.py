@@ -34,7 +34,7 @@ class UserTracking(View):
             # params             
             ticket_id = request.GET['ticket_id']  
             ticket=SiteTaskMapper.objects.get(id=ticket_id)
-            print('ticket ===*****', ticket)                        
+            # print('ticket ===*****', ticket)                        
             user_id=ticket.site_engineer_id
             site_id=ticket.sites_id
             
@@ -64,7 +64,7 @@ class UserTracking(View):
                 # -- map --        
                 map = folium.Map(width=1260, height=540, location=[place_lat[0], place_lng[0]], zoom_start=16)
                                 
-                print("len(place_lng)===", len(place_lng))
+                # print("len(place_lng)===", len(place_lng))
                 points = []
                 for i in range(len(place_lat)):
                     points.append([place_lat[i], place_lng[i]])
@@ -136,7 +136,7 @@ class TrackSummary(View):
             # -- firebase records --
             result_set=database.child(user_id).child(site_id).child(ticket_id).get().val()        
             if(result_set):
-                print('result_set ==', result_set)
+                # print('result_set ==', result_set)
                 for coordinates in result_set.values():
                     place_lat.append(coordinates["latitude"])
                     place_lng.append(coordinates["longitude"]) 
@@ -165,8 +165,10 @@ class TrackSummary(View):
                     summation_distance+=total_distance_traveled
                     summation_distance_list.append(summation_distance)
                             
-                total_distance_traveled = str(round(sum(point_distance_list), 2))
-                traveled = total_distance_traveled * 1000.0
+                total_distance_traveled = str(round(sum(point_distance_list), 3))
+                # print("total_distance_traveled ==", total_distance_traveled)                
+                traveled = int(float(total_distance_traveled )* 1000)
+                # print("traveled ==", traveled)
                               
                 i=0
                 for coordinates in result_set.values():
